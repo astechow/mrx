@@ -1,28 +1,21 @@
 function varargout = mrxGUI(varargin)
-% MRXGUI MATLAB code for mrxGUI.fig
-%      MRXGUI, by itself, creates a new MRXGUI or raises the existing
-%      singleton*.
+% mrxGUI
+% 
+% GUI to visualize MRX shot data and save shot info for further processing.
+% expects initMRX() to return the following paths:
+%   dataPath:   path to processed shot files in .mat format
+%   dbPath:     path to shot database in .mat format
+% keyboard shortcuts:
+%   u/i:        shot back/forward
+%   j/k:        time index back/forward
+%   g:          gather data
+%   s:          save data
 %
-%      H = MRXGUI returns the handle to a new MRXGUI or the handle to
-%      the existing singleton*.
-%
-%      MRXGUI('CALLBACK',hObject,eventData,handles,...) calls the local
-%      function named CALLBACK in MRXGUI.M with the given input arguments.
-%
-%      MRXGUI('Property','Value',...) creates a new MRXGUI or raises the
-%      existing singleton*.  Starting from the left, property value pairs are
-%      applied to the GUI before mrxGUI_OpeningFcn gets called.  An
-%      unrecognized property name or invalid value makes property application
-%      stop.  All inputs are passed to mrxGUI_OpeningFcn via varargin.
-%
-%      *See GUI Options on GUIDE's Tools menu.  Choose "GUI allows only one
-%      instance to run (singleton)".
-%
-% See also: GUIDE, GUIDATA, GUIHANDLES
+% Jan. 2016, Adrian von Stechow
 
 % Edit the above text to modify the response to help mrxGUI
 
-% Last Modified by GUIDE v2.5 18-Dec-2015 14:53:06
+% Last Modified by GUIDE v2.5 05-Jan-2016 10:49:35
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -86,7 +79,7 @@ end
 if  exist('initMRX','file')
     conf = initMRX;
 else
-    % default MRX path
+    % not found, use default MRX path
     conf.dataPath = '/p/mrxdata/matlab/GeneralRoutines/ProcessedDataFiles';
     conf.dbPath   = '';
     disp('initMRX() not found, using default path /p/mrxdata/matlab/GeneralRoutines/ProcessedDataFiles')
@@ -123,7 +116,7 @@ end
 
 delete(handles.figure1)
 
-function shotNumberTextBox_Callback(hObject, eventdata, handles) %#ok<INUSL,DEFNU>
+function shotNumberTextBox_Callback(hObject, eventdata, handles) %#ok<INUSL>
 % hObject    handle to shotNumberTextBox (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
@@ -133,13 +126,14 @@ function shotNumberTextBox_Callback(hObject, eventdata, handles) %#ok<INUSL,DEFN
 
 % does the initial file loading
 
-% get shot number field
+% get shot number text field
 shotNum = get(hObject,'String');
 setappdata(handles.figure1,'shot',str2double(shotNum))
 
+% load shot
 loadMRXData(handles, shotNum)
 
-% --- Executes during object creation, after setting all properties.
+% % --- Executes during object creation, after setting all properties.
 function shotNumberTextBox_CreateFcn(hObject, eventdata, handles)
 % hObject    handle to shotNumberTextBox (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
@@ -171,8 +165,11 @@ function traceSelector1_Callback(hObject, eventdata, handles) %#ok<DEFNU,INUSL>
 % Hints: contents = cellstr(get(hObject,'String')) returns traceSelector1 contents as cell array
 %        contents{get(hObject,'Value')} returns selected item from traceSelector1
 
+% get trace selection menu content
 contents = cellstr(get(hObject,'String'));
 setappdata(handles.figure1,'traceSelector1SelectedItem',contents{get(hObject,'Value')});
+
+% replot all traces
 plotMRXTraces(handles)
 
 % --- Executes during object creation, after setting all properties.
@@ -187,6 +184,7 @@ if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgr
     set(hObject,'BackgroundColor','white');
 end
 
+% set default string
 set(hObject,'String','Load data to select item')
 
 % --- Executes on selection change in traceSelector2.
@@ -198,8 +196,11 @@ function traceSelector2_Callback(hObject, eventdata, handles) %#ok<DEFNU,INUSL>
 % Hints: contents = cellstr(get(hObject,'String')) returns traceSelector2 contents as cell array
 %        contents{get(hObject,'Value')} returns selected item from traceSelector2
 
+% get trace selection menu content
 contents = cellstr(get(hObject,'String'));
 setappdata(handles.figure1,'traceSelector2SelectedItem',contents{get(hObject,'Value')});
+
+% replot all traces
 plotMRXTraces(handles)
 
 % --- Executes during object creation, after setting all properties.
@@ -214,6 +215,7 @@ if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgr
     set(hObject,'BackgroundColor','white');
 end
 
+% set default string
 set(hObject,'String','Load data to select item')
 
 function tStartTextBox_Callback(hObject, eventdata, handles) %#ok<DEFNU,INUSL>
@@ -224,7 +226,10 @@ function tStartTextBox_Callback(hObject, eventdata, handles) %#ok<DEFNU,INUSL>
 % Hints: get(hObject,'String') returns contents of tStartTextBox as text
 %        str2double(get(hObject,'String')) returns contents of tStartTextBox as a double
 
+% get display start time text field string
 setappdata(handles.figure1,'tDisplayStart',str2double(get(hObject,'String')));
+
+% replot traces
 plotMRXTraces(handles)
 
 % --- Executes during object creation, after setting all properties.
@@ -248,7 +253,10 @@ function tEndTextBox_Callback(hObject, eventdata, handles) %#ok<DEFNU,INUSL>
 % Hints: get(hObject,'String') returns contents of tEndTextBox as text
 %        str2double(get(hObject,'String')) returns contents of tEndTextBox as a double
 
+% get display start time text field string
 setappdata(handles.figure1,'tDisplayEnd',str2double(get(hObject,'String')));
+
+% replot traces
 plotMRXTraces(handles)
 
 
@@ -273,8 +281,11 @@ function imageSelector_Callback(hObject, eventdata, handles) %#ok<DEFNU,INUSL>
 % Hints: contents = cellstr(get(hObject,'String')) returns imageSelector contents as cell array
 %        contents{get(hObject,'Value')} returns selected item from imageSelector
 
+% get 2D plot selection menu content
 contents = cellstr(get(hObject,'String'));
 setappdata(handles.figure1,'imageSelectorSelectedItem', contents{get(hObject,'Value')});
+
+% replot images
 plotImages(handles);
 
 % --- Executes during object creation, after setting all properties.
@@ -289,6 +300,7 @@ if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgr
     set(hObject,'BackgroundColor','white');
 end
 
+% set default string
 set(hObject,'String','Load data to select item')
 
 
@@ -299,8 +311,12 @@ function timeSelectorTextBox_Callback(hObject, eventdata, handles) %#ok<INUSL,DE
 
 % Hints: get(hObject,'String') returns contents of timeSelectorTextBox as text
 %        str2double(get(hObject,'String')) returns contents of timeSelectorTextBox as a double
+
+% time selector used, disable tIndSelect and set tSelect
 setappdata(handles.figure1,'tIndSelect', NaN);
 setappdata(handles.figure1,'tSelect',    str2double(get(hObject,'String')));
+
+% replot images
 plotImages(handles);
 
 % --- Executes during object creation, after setting all properties.
@@ -315,7 +331,7 @@ if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgr
     set(hObject,'BackgroundColor','white');
 end
 
-function timeIndexSelectorTextBox_Callback(hObject, eventdata, handles) %#ok<DEFNU,INUSL>
+function timeIndexSelectorTextBox_Callback(hObject, eventdata, handles) %#ok<INUSL>
 % hObject    handle to timeIndexSelectorTextBox (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
@@ -323,9 +339,11 @@ function timeIndexSelectorTextBox_Callback(hObject, eventdata, handles) %#ok<DEF
 % Hints: get(hObject,'String') returns contents of timeIndexSelectorTextBox as text
 %        str2double(get(hObject,'String')) returns contents of timeIndexSelectorTextBox as a double
 
+% index selector used, disable tSelect and set tIndSelect
 setappdata(handles.figure1,'tIndSelect', str2double(get(hObject,'String')));
 setappdata(handles.figure1,'tSelect',    NaN);
 
+% replot images
 plotImages(handles);
 
 % --- Executes during object creation, after setting all properties.
@@ -340,16 +358,19 @@ if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgr
     set(hObject,'BackgroundColor','white');
 end
 
-function trace1_CreateFcn(hObject, eventdata, handles) %#ok<INUSD,DEFNU>
-
-
 % --- Executes on button press in shotBackButton.
 function shotBackButton_Callback(hObject, eventdata, handles)
 % hObject    handle to shotBackButton (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+
+% get shot number
 val = str2double(get(handles.shotNumberTextBox,'String'));
+
+% decrease by 1
 set(handles.shotNumberTextBox,'String',num2str(val-1));
+
+% do callback
 shotNumberTextBox_Callback(handles.shotNumberTextBox,eventdata,handles)
 
 % --- Executes on button press in shotForwardButton.
@@ -357,8 +378,14 @@ function shotForwardButton_Callback(hObject, eventdata, handles)
 % hObject    handle to shotForwardButton (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+
+% get shot number
 val = str2double(get(handles.shotNumberTextBox,'String'));
+
+% increase by 1
 set(handles.shotNumberTextBox,'String',num2str(val+1));
+
+% do callback
 shotNumberTextBox_Callback(handles.shotNumberTextBox,eventdata,handles)
 
 % --- Executes on button press in indexBackButton.
@@ -366,8 +393,14 @@ function indexBackButton_Callback(hObject, eventdata, handles)
 % hObject    handle to indexBackButton (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+
+% get index value
 val = str2double(get(handles.timeIndexSelectorTextBox,'String'));
+
+% decrease by 1
 set(handles.timeIndexSelectorTextBox,'String',num2str(val-1));
+
+% do callback
 timeIndexSelectorTextBox_Callback(handles.timeIndexSelectorTextBox,eventdata,handles)
 
 % --- Executes on button press in indexForwardButton.
@@ -375,8 +408,14 @@ function indexForwardButton_Callback(hObject, eventdata, handles)
 % hObject    handle to indexForwardButton (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+
+% get index value
 val = str2double(get(handles.timeIndexSelectorTextBox,'String'));
+
+% increase by 1
 set(handles.timeIndexSelectorTextBox,'String',num2str(val+1));
+
+% do callback
 timeIndexSelectorTextBox_Callback(handles.timeIndexSelectorTextBox,eventdata,handles)
 
 
@@ -387,6 +426,8 @@ function lqGfxButton_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 
 % Hint: get(hObject,'Value') returns toggle state of lqGfxButton
+
+% reload everything
 shotNumberTextBox_Callback(handles.shotNumberTextBox,eventdata,handles)
 
 
@@ -396,7 +437,10 @@ function gatherDataButton_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
+% gather shot data at selected time point
 data = gatherData(handles);
+
+% display gathered data in table
 names = fieldnames(data);
 set(handles.uitable1,'Data',[names, struct2cell(data)])
 setappdata(handles.figure1,'shotData',data)
@@ -407,6 +451,7 @@ function saveDataButton_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
+% save gathered data to shotdb
 saveData(handles);
 
 % --- Executes on button press in markShotButton.
@@ -415,9 +460,12 @@ function markShotButton_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
+% change value of "shot marked"
 tmp = getappdata(handles.figure1,'shotMarked');
 tmp = ~tmp;
 setappdata(handles.figure1,'shotMarked',tmp);
+
+% gather data again
 gatherDataButton_Callback(handles.gatherDataButton, eventdata, handles);
 
 
@@ -430,7 +478,7 @@ function figure1_KeyPressFcn(hObject, eventdata, handles)
 %	Modifier: name(s) of the modifier key(s) (i.e., control, shift) pressed
 % handles    structure with handles and user data (see GUIDATA)
 
-% keyboard shortcuts
+% define keyboard shortcuts
 if strcmp(eventdata.Key,'i')
     shotForwardButton_Callback(handles.shotForwardButton, eventdata, handles)
 elseif strcmp(eventdata.Key,'u')
@@ -475,10 +523,12 @@ function compareButton_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
+% switch values of shotNumberTextBox and compareTextBox
 tmp = get(handles.compareTextBox,'String');
 set(handles.compareTextBox,'String',get(handles.shotNumberTextBox,'String'));
 set(handles.shotNumberTextBox,'String',tmp);
 
+% reload data
 shotNumberTextBox_Callback(handles.shotNumberTextBox,eventdata,handles)
 
 

@@ -1,12 +1,16 @@
-function handles = initImages(handles) %#ok<INUSL>
+function handles = initImages(handles)
+% handles = initImages(handles)
+%
 % initialize 2D plots
+%
+% Jan. 2016, Adrian von Stechow
 
 % get magnetic probe data
 d    = getappdata(handles.figure1,'magData');
 
 % initialize with zero data
 data = zeros(size(d(1).Bx(:,:,1)));
-data(end) = 1;
+data(end) = 1; % this ensures a contour can be drawn and avoids warnings
 
 for i=1:4
     w = warning('off','MATLAB:contourf:NonFiniteData');
@@ -20,13 +24,16 @@ end
 function contourplot(h,x,y,data,handles)
 
 % modified version of contourfi
-hold(h,'off')
 [h,x,y,c,~,m,levels,argin] = contsurfi(h,x,y,data,0,max(abs(data(:)')));
 cval=linspace(-m, m, 2*levels+1);
+
+hold(h,'off')
 if get(handles.lqGfxButton,'Value')
-    imagesc(x,y,c,'Parent',h);
+    % do imagesc plot if low quality graphics selcted
+    imagesc(x,y,data,'Parent',h);
     axis(h,'xy')
 else
+    % else do fancy contour plot
     contourf(h,x,y,c,cval,argin{:},'edgecolor','none');
 end
 hold(h,'on')

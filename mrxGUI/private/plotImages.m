@@ -1,11 +1,13 @@
 function handles = plotImages(handles)
-% function handles = plotImages(hObject,handles)
+% handles = plotImages(hObject,handles)
 %
-% updates 2D plots
+% updates 2D plots by only changing plot contents with new data
+%
+% Jan. 2016, Adrian von Stechow
 
 % check if plot selector dropdown menu has been used yet
 if isnan(getappdata(handles.figure1,'imageSelectorSelectedItem'))
-    userPlot = 'Ey'; % default is inductive electric field
+    userPlot = 'Flux'; % default is magnetic flux
 else
     userPlot = getappdata(handles.figure1,'imageSelectorSelectedItem');
 end
@@ -34,18 +36,18 @@ else
 end
 
 % check if shotData has been gathered yet (for misc markers)
-shotData = getappdata(handles.figure1,'shotData');
-shot = getappdata(handles.figure1,'shot');
+% shotData = getappdata(handles.figure1,'shotData');
+% shot = getappdata(handles.figure1,'shot');
 
-if isstruct(shotData) && (shotData.shot == shot)
-    marker.x = shotData.rx;
-    marker.z = shotData.zx;
-else
-    marker.x = nan;
-    marker.z = nan;
-end
+% if isstruct(shotData) && (shotData.shot == shot)
+%     marker.x = shotData.rx;
+%     marker.z = shotData.zx;
+% else
+%     marker.x = nan;
+%     marker.z = nan;
+% end
 
-for i=1:4
+for i=1:4 % step through axis handles
     
     % select axis
     name  = ['imagePlot' num2str(i)];
@@ -59,6 +61,7 @@ for i=1:4
         % plot requested data
         contourupdate(h,data.values,handles)
         title(h,[titleList{i} ' - ' data.label])
+        % set color limits
         if ~isnan(data.ylims)
             caxis(h,data.ylims)
         end
@@ -104,6 +107,7 @@ end
 
 function contourupdate(h,data,handles)
 % update content of contour/image plot h
+
 tmp = get(h,'Children');
 m = max(abs(data(:)));
 

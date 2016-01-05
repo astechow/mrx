@@ -1,9 +1,16 @@
 function out = loadFromDB(handles)
-% saves gathered data for export to database
+% out = loadFromDB(handles)
+%
+% loads data from shotdb
+% Jan. 2016, Adrian von Stechow
 
 shot    = getappdata(handles.figure1,'shot');
 conf    = getappdata(handles.figure1,'conf');
+
+% get shotdb reference
 m       = matfile(conf.dbPath,'Writable',true);
+
+% get field names
 w       = whos(m);
 names   = {w.name};
 
@@ -14,9 +21,9 @@ else
     if isempty(index) % not saved, return NaN
         out = NaN;
     else
-        for i = 1:length(names)
+        for i = 1:length(names) % step through fields
             try
-                out.(names{i}) = m.(names{i})(index,1);
+                out.(names{i}) = m.(names{i})(index,1); % get values
             catch % catches case where m.(names{i}) is not fully populated yet
                 out.(names{i}) = NaN;
             end

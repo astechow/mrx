@@ -1,7 +1,10 @@
 function fetchMRXData(handles)
-% get minimal set of data from matobj
+% fetchMRXData(handles)
+%
+% get initial (minimal) set of data from matobj
+%
+% Jan. 2016, Adrian von Stechow
 
-% fetch rcc data
 matFile = getappdata(handles.figure1,'matFile');
 setappdata(handles.figure1,'fastCurrents',matFile.Fast_Currents);
 w=warning('off');

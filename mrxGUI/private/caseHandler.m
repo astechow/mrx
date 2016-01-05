@@ -1,11 +1,14 @@
 function data = caseHandler(handles,select,tInd)
-%function data = caseHandler(handles,select,tInd)
+% data = caseHandler(handles,select,tInd)
 % returns dataset according to selection string
 % handles: gui handles struct
 % select:  string of selection
 % tInd:    time index to plot
+%
+% Jan. 2016, Adrian von Stechow
 
 switch select
+    
     case 'coil currents'
         
         tmp = getappdata(handles.figure1,'fastCurrents');
@@ -30,7 +33,7 @@ switch select
         
         tmp = getappdata(handles.figure1,'magData');
         data.values = tmp.Poloidal_Nulls.x*1000;
-        multiNulls = size(data.values,1)>1; % multiple nulls detected
+%         multiNulls = size(data.values,1)>1; % multiple nulls detected
         data.time   = getappdata(handles.figure1,'time');
         data.label  = 'r [mm]';
         data.legend = NaN;
@@ -38,7 +41,8 @@ switch select
         data.ylims  = NaN;
         
         % get center crossing time point
-        % TODO handles multiple X-points better
+        % TODO handle multiple X-points better, right now only uses first
+        % one
         tCross = data.time(ind_get(data.values(1,:),375));
             
         setappdata(handles.figure1,'tCross',tCross)
@@ -96,19 +100,23 @@ switch select
         data.xtra   = NaN;
 %         data.ylims  = [-1 1]*max(max(max(abs(tmp.Jy(:,:,260:400)))))*1e-6;
         data.ylims  = [-1 1];
+        data.rx     = tmp.Poloidal_Nulls.x(1,tInd);
+        data.zx     = tmp.Poloidal_Nulls.z(1,tInd);
         
     case  'By'
         
         tmp = getappdata(handles.figure1,'magData');
         
         %TODO better way subtract guide field?
-        
         data.values = (tmp.By(:,:,tInd)-mean(mean(tmp.By(:,:,tInd))))*1e3;
         data.time   = getappdata(handles.figure1,'time');
         data.label  = ['[mT], mean ' num2str(mean(mean(tmp.By(:,:,tInd)))*1000)];
         data.legend = [];
         data.xtra   = NaN;
         data.ylims  = NaN;
+        data.rx     = tmp.Poloidal_Nulls.x(1,tInd);
+        data.zx     = tmp.Poloidal_Nulls.z(1,tInd);
+        
         
     case  'Bz'
         
@@ -120,6 +128,8 @@ switch select
         data.legend = NaN;
         data.xtra   = NaN;
         data.ylims  = NaN;
+        data.rx     = tmp.Poloidal_Nulls.x(1,tInd);
+        data.zx     = tmp.Poloidal_Nulls.z(1,tInd);
         
     case  'Ey'
         
@@ -131,6 +141,8 @@ switch select
         data.legend = NaN;
         data.xtra   = NaN;
         data.ylims  = [-250 250];
+        data.rx     = tmp.Poloidal_Nulls.x(1,tInd);
+        data.zx     = tmp.Poloidal_Nulls.z(1,tInd);
         
     case  'Jx'
         
@@ -142,6 +154,8 @@ switch select
         data.legend = NaN;
         data.xtra   = NaN;
         data.ylims  = NaN;
+        data.rx     = tmp.Poloidal_Nulls.x(1,tInd);
+        data.zx     = tmp.Poloidal_Nulls.z(1,tInd);
         
     case  'Jz'
         
@@ -153,6 +167,8 @@ switch select
         data.legend = NaN;
         data.xtra   = NaN;
         data.ylims  = NaN;
+        data.rx     = tmp.Poloidal_Nulls.x(1,tInd);
+        data.zx     = tmp.Poloidal_Nulls.z(1,tInd);
         
     case  'Flux'
         
@@ -177,7 +193,7 @@ switch select
         data.ylims  = NaN;
         
 end
-% 'total current','x-pt z pos.','gf at x-pt?';
+
 end
 
 function langData = loadLangmuir(handles)
