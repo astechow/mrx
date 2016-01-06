@@ -1,7 +1,7 @@
 function [out,pos,fcshift]=shotListHighGFScan_2
 % GF LP pos scan on 12/03/2015
 % low fill pressure (2.5/0.6), GF -150
-% FC shift in negative direction for fist half
+% FC shift in negative direction for first half
 
 out=[
     168124:168141 ...

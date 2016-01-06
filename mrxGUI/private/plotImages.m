@@ -60,12 +60,16 @@ for i=1:4 % step through axis handles
         
         % plot requested data
         contourupdate(h,data.values,handles)
+        
+        % set title
         title(h,[titleList{i} ' - ' data.label])
-        % set color limits
+        
+        % set color limits if defined
         if ~isnan(data.ylims)
             caxis(h,data.ylims)
         end
         
+        % set X-point marker if defined
         if isfield(data,'rx')
             delete(findobj(h,'Marker','x'))
             plot(h,data.zx*1e3,data.rx*1e3,'xk')
@@ -80,7 +84,6 @@ for i=1:4 % step through axis handles
 end
 
 % update position of vertical bar in time traces
-
 for i=1:5
     % delete old bars
     try
@@ -93,9 +96,11 @@ for i=1:5
     % add new bars
     handles.tSelectHandle{i} = vline(handles.(['trace' num2str(i)]),time(tInd),'k');
 end
+
+% update handles
 guidata(handles.figure1,handles)
 
-% output time index
+% update time index
 setappdata(handles.figure1,'tIndSelect',tInd);
 setappdata(handles.figure1,'tSelect',tSelect);
 
@@ -112,8 +117,12 @@ tmp = get(h,'Children');
 m = max(abs(data(:)));
 
 if get(handles.lqGfxButton,'Value')
+    % update CData if imagesc plot
     set(findobj(tmp,'Type','Image'),'CData',data)
 else
+    % update contour plot and contour level list
+    % annoying change in newer matlab versions: contours are now object
+    % type "Contour" and no longer "hggroup".
     if verLessThan('matlab', '8.2')
         set(findobj(tmp,'Type','hggroup'),'ZData',data)
         set(findobj(tmp,'Type','hggroup'),'LevelList',linspace(-m,m,61))
@@ -123,6 +132,7 @@ else
     end
 end
 
+% set color limits
 caxis(h,[-m m])
 
 end

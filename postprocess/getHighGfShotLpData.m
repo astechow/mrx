@@ -1,7 +1,5 @@
 function out=getHighGfShotLpData(scanShots, fcshift)
 
-% scanShots = shotListHighGFScan; % old scan
-% [scanShots,rpos,fcshift] = shotListHighGFScan2;
 conf      = initMRX;
 db        = load(conf.dbPath);
 

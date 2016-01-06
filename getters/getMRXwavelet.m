@@ -1,7 +1,10 @@
 function out=getMRXwavelet(shot)
-% function out=getMRXwavelet(shot)
+% out=getMRXwavelet(shot)
+%
 % load a precomputed wavelet spectrum from the wavelet database as created
 % by doWavelet()
+%
+% Jan. 2016, Adrian von Stechow
 
 conf = initMRX;
 

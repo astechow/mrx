@@ -1,7 +1,9 @@
-function flucChooser(shots)
-% flucChooser Select a data set from the pop-up menu, then
-% click one of the plot-type push buttons. Clicking the button
-% plots the selected data in the axes.
+function flucChooser
+% plots fluctuation data for a given shot and allows for manual selection
+% of the time point of optimal fluctuations.
+% This info is stored in shotdb when save is pressed.
+%
+% Jan. 2016, Adrian von Stechow
 
 c   = initMRX;
 % shot database
@@ -9,31 +11,31 @@ db = matfile(c.dbPath);
 db.Properties.Writable = true;
 
 %  Create and then hide the UI as it is being constructed.
-f = figure('Visible','off','Position',[10,50,1500,900]);
+f = figure('Visible','off','Position',[10,50,800,850]);
 f.Name = 'FlucChooser';
 f.NumberTitle = 'off';
 f.KeyPressFcn = @keyPress;
 
 %  Construct the components.
 hshot = uicontrol('Style','edit','String','Shot',...
-    'Position',[220,450,100,30],...
+    'Position',[220,410,100,30],...
     'Callback',@hshot_callback);
 hauto = uicontrol('Style','pushbutton','String','Auto',...
-    'Position',[100,450,100,30]);
+    'Position',[100,410,100,30]);
 hsel1 = uicontrol('Style','edit','String','t1',...
-    'Position',[340,450,100,30]);
+    'Position',[340,410,100,30]);
 hsel2 = uicontrol('Style','edit','String','t2',...
-    'Position',[460,450,100,30]);
+    'Position',[460,410,100,30]);
 hsave = uicontrol('Style','pushbutton','String','Save',...
-    'Position',[580,450,100,30],...
+    'Position',[580,410,100,30],...
     'Callback',@hsave_callback);
-ax1 = axes('Units','Pixels','Position',[100,545,600,350]);
+ax1 = axes('Units','Pixels','Position',[100,470,600,350]);
 hp1 = plot(ax1,[200 400],[0 0],[200 400],[5 5],[200 400],[-5 -5],[200 400],[0 0],...
     'ButtonDownFcn',@hp1_callback);
 hv1 = vline(ax1,200,'k');
 hvs1= vline(ax1,200,'r');
 hvc1= vline(ax1,200,'b');
-ax2 = axes('Units','Pixels','Position',[100,20,600,350],...
+ax2 = axes('Units','Pixels','Position',[100,40,600,350],...
     'ButtonDownFcn',@ax2_callback);
 hp2 = plot(ax2,[200 400],[0 0],[200 400],[0 0],[200 400],[0 0],[200 400],[0 0],...
     'ButtonDownFcn',@hp2_callback);
@@ -48,7 +50,6 @@ movegui(f,'center')
 f.Visible = 'on';
 
 % initialize variables
-
 t1 = 0;
 t2 = 0;
 tSelect = 0;

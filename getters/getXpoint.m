@@ -1,22 +1,27 @@
-function out=getXpoint(d,timePoints)
-% out=getXpoint(d,timePoints)
-% extract X-point data
+function out = getXpoint(d,timePoints)
+% out = getXpoint(data,timePoints)
+%
+% extract X-point position, electric field and flux
+%
+% Jan. 2016, Adrian von Stechow
 
-m = d.Interp_Data_YA;
-m = m(1);
+m = d.Interp_Data_YA(1);
 
+% indices of chosen time points
 tInd = ind_get(d.time,timePoints);
 
+% already available data
 out.x    = m.Poloidal_Nulls.x(1,tInd);
 out.z    = m.Poloidal_Nulls.z(1,tInd);
 out.EPhi = m.Poloidal_Nulls.Ephi(1,tInd);
 out.Flux = m.Poloidal_Nulls.Flux(1,tInd);
 
+% get indices of positions
 xInd = ind_get(m.x,out.x);
 zInd = ind_get(m.z,out.z);
 
 for i=1:length(tInd)
-    if isnan(out.x(i))
+    if ~isnan(out.x(i))
         xi = xInd(i);
         zi = zInd(i);
         ti = tInd(i);

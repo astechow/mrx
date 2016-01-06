@@ -1,6 +1,10 @@
 function plotWavelet(w,chan)
 % plotWavelet(w,chan)
-% chan 'Br','By','Bz','Ey'
+%
+% plot the wavelet data for wavelet struct w
+% chan: 'Br','By','Bz','Ey','pref','pr','py','pz' 
+%
+% Jan. 2016, Adrian von Stechow
 
 data = abs(w.(chan));
 

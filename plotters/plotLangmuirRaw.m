@@ -1,3 +1,5 @@
+% unused script, cleanup needed
+
 l    = load(c.highGfLangDataPath2); % langmuir probe data
 
 figure(1)

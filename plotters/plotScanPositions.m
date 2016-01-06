@@ -1,15 +1,20 @@
 function plotScanPositions
-% plot the probe positions used in the guide field scan
+% plotScanPositions
+%
+% plot the probe positions used in the guide field scans
+%
+% Jan. 2016, Adrian von Stechow
 
 figure(41992)
 clf
 
 d = load('Y:\mrxdata\ProcessedDataFiles\Processed_Data_167750.mat');
 
+% magnetic probes
 for i=1:8
-    plot(d.MagProbes(i).By.z,d.MagProbes(i).By.x,'k.')
+    plot(d.MagProbes(i).By.z,d.MagProbes(i).By.x,'r.')
     hold on
-    plot(d.MagProbes(i).Bx.z,d.MagProbes(i).Bx.x,'k.')
+    plot(d.MagProbes(i).Bx.z,d.MagProbes(i).Bx.x,'b.')
     plot(d.MagProbes(i).Bz.z,d.MagProbes(i).Bz.x,'k.')
 end
 
@@ -35,8 +40,8 @@ text(0.015,0.375,'FP','horizontal','right','vertical','top')
 
 hline(0.375)
 vline(0)
-
 labels('','Z','R')
+axis image
 
-ezpdf(41992,'scanpositions',[320 240]*1.5,'f',1)
+ezpdf15(41992,'scanpositions',[320 240]*1.5,'f',1)
 dockfigs(41992)
