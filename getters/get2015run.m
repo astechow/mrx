@@ -42,7 +42,11 @@ desc.gasstart   = num(index,gasStartInd);
 desc.gaspulse   = num(index,gasInd);
 desc.purpose    = txt(index,purposeInd);
 
-[num, ~] = xlsread('shotlist.xlsx',['run' num2str(sel)],'','basic'); % load runX sheet
-scaninfo.scanShots = num(:,1);
-scaninfo.position  = num(:,2);
-scaninfo.fcshift   = num(:,3);
+try
+    [num, ~] = xlsread('shotlist.xlsx',['run' num2str(sel)],'','basic'); % load runX sheet
+    scaninfo.scanShots = num(:,1);
+    scaninfo.position  = num(:,2);
+    scaninfo.fcshift   = num(:,3);
+catch
+    scaninfo = nan;
+end
