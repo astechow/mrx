@@ -1,4 +1,9 @@
 function out = getMeanCS(shots)
+% out = getMeanCS(shots)
+%
+% step through shots and get mean current density
+%
+% Jan. 2016, Adrian von Stechow
 
 conf      = initMRX;
 db        = load(conf.dbPath);
