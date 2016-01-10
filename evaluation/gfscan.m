@@ -1,15 +1,24 @@
+%% TODO comment
+
+
+%% initialization
+
+% load paths and shotdb
 c  = initMRX;
 db = load(c.dbPath);
 
-shotList = 168857:169010;
+% load shot list (guide field variation run)
+shotList = get2015run(7); 
 
 n = 0;
-    
+
+%% get guide field current for all shots
+
 for i = 1:length(shotList)
     disp([num2str(i) '/' num2str(length(shotList))])
-    if isUnmarkedShot(shotList(i))
+    if isUnmarkedShot(shotList(i),db)
         n = n+1;
-        dbShotInd(n) = find(db.shot==shotList(i));
+        dbShotInd(n) = isUnmarkedShot(shotList(i),db);
         tmp          = loadMRXshot(shotList(i),c);
         current(n)   = tmp.GF_Current;
     end
@@ -17,7 +26,7 @@ end
 
 %% fluctuation processing
 
-out = getHighGfShotFlucData(shotList);
+out = getFlucAmp(shotList);
 
 %%
 figure(1)
@@ -29,6 +38,7 @@ labels('guide field at X-pt','shot','B_y [mT]')
 subplot(2,1,2)
 plot(db.shot(dbShotInd)-168000,-db.By(dbShotInd,1)./db.Bzup(dbShotInd,1),'.')
 labels('norm. guide field at X-pt','shot','B_y/B_z')
+
 %%
 figure(2)
 clf
